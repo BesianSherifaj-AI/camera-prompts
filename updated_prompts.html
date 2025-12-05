@@ -1,0 +1,833 @@
+<html lang="en"><head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Camera Shot Prompts</title>
+    <style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    overflow-x: hidden; /* prevents horizontal scroll */
+}
+
+        :root {
+            --bg-color: #f4f7f9;
+            --card-bg: #ffffff;
+            --card-hover: #e3f2fd;
+            --text-color: #333;
+            --border-color: #bbdefb;
+            --accent-color: #004d99;
+            --tag-color: #e65100;
+            --prompt-bg: #e3f2fd;
+            --prompt-border: #2196f3;
+        }
+        body.dark-mode {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --card-hover: #2a2a2a;
+            --text-color: #f0f0f0;
+            --border-color: #333;
+            --accent-color: #bb86fc;
+            --tag-color: #ff7043;
+            --prompt-bg: #2d2d2d;
+            --prompt-border: #bb86fc;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+.container {
+    max-width: 100%; /* remove the 1200px limit */
+    width: 100%;
+    margin: 0;
+    padding: 20px; /* optional spacing */
+}
+
+        h1 {
+            color: var(--accent-color);
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--accent-color);
+        }
+        /* Pages Bar */
+        #pages-bar {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            flex-wrap: wrap;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        #pages-bar button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        #pages-bar button:hover {
+            opacity: 0.5;
+        }
+        #pages-bar button.active {
+            background: var(--tag-color);
+        }
+        #add-page-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .search-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+#search {
+    flex: 1; /* grow to fill available space */
+    max-width: 250px; /* limit width */
+    padding: 6px 10px; /* smaller padding */
+    font-size: 14px; /* smaller font */
+    border-radius: 5px;
+}
+
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        .dark-mode-toggle button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .category {
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+        .category-title {
+            color: var(--tag-color);
+            border-bottom: 2px solid var(--tag-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        .category-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .add-prompt-btn, .delete-category-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .delete-category-btn {
+            background: #f44336;
+        }
+.prompt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 250px); /* fixed width */
+    gap: 10px;
+    justify-content: start; /* aligns cards to left */
+    width: 100%;
+}
+
+
+.prompt-card {
+    position: relative;
+    background-color: var(--prompt-bg);
+    border: 1px solid var(--border-color);
+    border-left: 5px solid var(--prompt-border);
+    border-radius: 12px; /* smoother corners */
+    padding: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Hide buttons initially */
+.prompt-card .edit-buttons {
+    opacity: 0;
+    pointer-events: none; /* prevents clicking when hidden */
+    transition: opacity 1.2s;
+}
+
+/* Show buttons on hover */
+.prompt-card:hover .edit-buttons {
+    opacity: 1;
+    pointer-events: auto; /* allow clicking now */
+}
+
+.prompt-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    background: linear-gradient(145deg, var(--prompt-bg), #f032ff);
+}
+
+        .prompt-tag {
+            font-weight: bold;
+            color: var(--tag-color);
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+            word-break: break-word;
+        }
+        .prompt-description {
+            font-size: 0.9em;
+            color: var(--text-color);
+            margin-top: 10px;
+            padding-top: 5px;
+            border-top: 1px dashed var(--border-color);
+        }
+        .prompt-image {
+            width: 100%;
+            max-width: 350px;
+            height: auto;
+            object-fit: auto;
+            border-radius: 10px;
+            margin-bottom: 1px;
+        }
+        .edit-buttons {
+            position: absolute;
+            top: 1px;
+            right: 5px;
+            display: flex;
+            gap: 2px;
+        }
+        .edit-buttons button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 5px 15px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .edit-buttons button.delete {
+            background: #d9534f;
+        }
+.copy-message {
+    position: fixed;
+    top: 200px; /* distance from top */
+    left: 50%; /* move left edge to center */
+    transform: translateX(-50%); /* shift it back by 50% of its width */
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    opacity: 0;
+    transition: top 1.5s ease, opacity 0.5s ease;
+}
+
+        .copy-message.show {
+            top: 2px;
+            opacity: 1;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            color: var(--text-color);
+        }
+        .modal input, .modal textarea {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+        .modal textarea {
+            height: 150px;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .modal-buttons button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .modal-buttons .save {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .modal-buttons .cancel {
+            background-color: #f44336;
+            color: white;
+        }
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background-color: var(--bg-color);
+    padding: 1px 1px;
+    border-bottom: 2px solid var(--accent-color);
+}
+
+    </style>
+</head>
+<body class="dark-mode">
+    <div class="dark-mode-toggle">
+        <button id="dark-mode-toggle">Light Mode</button>
+    </div>
+<div class="container sticky-header">
+    <h1>🎨 Comprehensive Prompts for Image Generation</h1>
+    <div style="display: flex; align-items: center; gap: 2px; margin-bottom: 5px;">
+        <div id="pages-bar"><button class="active">Main Page</button><button class="">CAMERA</button><button class="">MATERIALS</button></div>
+        <button id="add-page-btn">Add Page</button>
+        <button id="add-category-btn" style="background: #2196F3; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Add Category</button>
+    <input type="text" id="search" placeholder="Search prompts..." style="flex: 1; max-width: 250px; padding: 6px 10px; font-size: 14px; border-radius: 5px; border: 1px solid var(--border-color); background-color: var(--card-bg); color: var(--text-color);">
+    </div>
+</div>
+
+<div id="pages-container"><div class="category">
+                    <h2 class="category-title">HISTORICAL ART MOVEMENTS</h2>
+                    <div class="category-controls">
+                        <button class="add-prompt-btn" data-category="HISTORICAL ART MOVEMENTS">Add Prompt</button>
+                        <button class="delete-category-btn" data-category="HISTORICAL ART MOVEMENTS">Delete Category</button>
+                    </div>
+                    <div class="prompt-grid" id="Main Page-HISTORICAL ART MOVEMENTS-grid"><div class="prompt-card"><img class="prompt-image" src="images/Renaissance-Style.png"><span class="prompt-tag">Renaissance-Style</span><p class="prompt-description">(Classical realism with precision, balanced composition, sfumato transitions, harmonious-proportions, and naturalistic lighting ) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Baroque-style.png"><span class="prompt-tag">Baroque-style</span><p class="prompt-description">(Dramatic chiaroscuro, dynamic poses, rich detail, theatrical emotions, heavy contrast, and a sense of grandeur and movement) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Rococo-paint-style.png"><span class="prompt-tag">Rococo-paint-style</span><p class="prompt-description">(Ornate decorative details , soft glowing light, delicate flowing shapes, intricate patterns, graceful , oil painting, soft brushstrokes, visible brush texture, painterly style 1700s-1800s, fine detail, luminous lighting ) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Neoclassical-paint-style.png"><span class="prompt-tag">Neoclassical-paint-style</span><p class="prompt-description">(Austere compositions inspired by Roman and Greek art, heroic poses, moral seriousness, strong contour lines, balanced composition, oil painting, fine brushstrokes, visible brush texture, muted color palette, soft but precise lighting, painterly style 18th-19th century, realistic details) [SUBJECT]
+</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Romanticism-style.png"><span class="prompt-tag">Romanticism-style</span><p class="prompt-description">(Emotional intensity, dramatic landscapes, expressive brushwork, sublime nature, stormy lighting, and heightened atmosphere)</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Impressionism-style.png"><span class="prompt-tag">Impressionism-style</span><p class="prompt-description">(Visible short brushstrokes, emphasis on light changes, soft edges, plein-air feeling, broken color, Monet-like luminosity) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Pointillism-style.png"><span class="prompt-tag">Pointillism-style</span><p class="prompt-description">(Image constructed only from countless distinct colored dots, optical color blending, crisp contours made only with micro-points) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Futurism.png"><span class="prompt-tag">Futurism</span><p class="prompt-description">(Dynamic movement lines, industrial energy, speed, overlapping forms suggesting motion and force) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Surrealism-art-style.png"><span class="prompt-tag">Surrealism-art-style</span><p class="prompt-description">(Dreamlike surreal realistic painting, chromatic, intricate, bizarre paradoxical, illogical and symbolic, abstracted, metaphorical, impossible bizarre scenarios, morphing, melting, floating, levitating, twisting perspectives, juxtaposed enigmatic objects, mismatched improbable situations, fully shaped drawing = complete, clean spaces composition)
+[SUBJECT]
+[ENVIROMENT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Expressionism-art-style.png"><span class="prompt-tag">Expressionism-art-style</span><p class="prompt-description">(Distorted forms, exaggerated colors, emotional intensity, energetic strokes, subjective and psychological atmosphere) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Fauvism-art-style.png"><span class="prompt-tag">Fauvism-art-style</span><p class="prompt-description">(Vivid unnatural colors, simplified forms, expressive painterly marks, raw emotional color fields) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Cubism-art-style.png"><span class="prompt-tag">Cubism-art-style</span><p class="prompt-description">(Fragmented geometry, multiple perspectives at once, abstract planar shapes, analytical structure, faceted construction) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Abstract-Expressionism.png"><span class="prompt-tag">Abstract-Expressionism</span><p class="prompt-description">(Spontaneous gestures, dynamic splashes, textured paint, emotional abstraction, Pollock-inspired energy) 
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Fresco-Painting.png"><span class="prompt-tag">Fresco-Painting</span><p class="prompt-description">(Ancient wall painting on wet plaster, matte earthy pigments, slightly desaturated, texture of aging wall, cracking plaster, renaissance feel) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Art-Nouveau-style.png"><span class="prompt-tag">Art-Nouveau-style</span><p class="prompt-description">(Flowing organic lines, decorative floral motifs, graceful curves, soft palettes, flat stylization inspired by Mucha) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Art-Deco-style.png"><span class="prompt-tag">Art-Deco-style</span><p class="prompt-description">(Geometric symmetry, flat , metallic accents, gold tones, streamlined elegance, luxury shapes, 1920s decorative styling) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Pop-Art.png"><span class="prompt-tag">Pop-Art</span><p class="prompt-description">(Bold comic-like colors, commercial imagery, flat tones, repetition, Warhol/Lichtenstein graphic aesthetic)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/De-Stijl.png"><span class="prompt-tag">De-Stijl</span><p class="prompt-description">(Strict grids, black outlines, primary color rectangles, strong alignment, Mondrian-like abstraction) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Bauhaus-art.png"><span class="prompt-tag">Bauhaus-art</span><p class="prompt-description">(Functional geometry, clean industrial design, primary colors, minimalist structure , flat illustration, utilitarian visual language)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Dadaism.png"><span class="prompt-tag">Dadaism</span><p class="prompt-description">(Absurdist collage, anti-art randomness, chaotic composition, satirical and nonsensical elements) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Op-Art.png"><span class="prompt-tag">Op-Art</span><p class="prompt-description">(High-contrast optical illusions, repetitive patterns, moiré effects, geometric distortions in black-and-white) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div></div>
+                </div><div class="category">
+                    <h2 class="category-title">TRADITIONAL MEDIA</h2>
+                    <div class="category-controls">
+                        <button class="add-prompt-btn" data-category="TRADITIONAL MEDIA">Add Prompt</button>
+                        <button class="delete-category-btn" data-category="TRADITIONAL MEDIA">Delete Category</button>
+                    </div>
+                    <div class="prompt-grid" id="Main Page-TRADITIONAL MEDIA-grid"><div class="prompt-card"><img class="prompt-image" src="images/Oil-Painting.png"><span class="prompt-tag">Oil-Painting</span><p class="prompt-description">(Thick textured brushstrokes, impasto depth, smooth color blending, glossy surface, classical painted look) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Watercolor.png"><span class="prompt-tag">Watercolor</span><p class="prompt-description">(Translucent washes, wet-on-wet diffusion, soft gradients, delicate splatter effects, fluid edges) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Charcoal-Drawing.png"><span class="prompt-tag">Charcoal-Drawing</span><p class="prompt-description">(Smudged textures, deep blacks, high contrast shading, gritty tonal transitions, expressive strokes) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Ink-Wash-Sumi-e.png"><span class="prompt-tag">Ink-Wash-Sumi-e</span><p class="prompt-description">(Black ink gradients, fluid brush control, minimalist strokes, controlled density variation, negative space emphasis) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Pencil-Sketch.png"><span class="prompt-tag">Pencil-Sketch</span><p class="prompt-description">(Graphite texture, cross-hatching, loose outlines, soft shading, hand-drawn realism or rough study feel) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Pastel-Art.png"><span class="prompt-tag">Pastel-Art</span><p class="prompt-description">(Soft powdery pigment, visible grain, vibrant matte colors, gentle blending, velvety surface, big pastel strokes)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Linocut-Woodcut.png"><span class="prompt-tag">Linocut-Woodcut</span><p class="prompt-description">(Bold carved shapes, thick black outlines, high contrast, stamping-like irregularities, wood-block-print texture) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Scratchboard.png"><span class="prompt-tag">Scratchboard</span><p class="prompt-description">(White lines carved from black surface, crisp highlights, dramatic contrast, engraved illustration style) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Cyanotype.png"><span class="prompt-tag">Cyanotype</span><p class="prompt-description">(Blue-and-white photogram appearance, soft silhouettes, sun-print textures, analog exposure softness) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Gouache-style.png"><span class="prompt-tag">Gouache-style</span><p class="prompt-description">(Opaque matte pigments, flat multilayered overlaping water colors, chalky texture, crisp edges with occasional brush grain,uncoloared areas gaps, detailed) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Aquarelle-style.png"><span class="prompt-tag">Aquarelle-style</span><p class="prompt-description">(French watercolor style with luminous washes, flowing light, airy transparency, delicate hue shifts)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Tempera-Painting.png"><span class="prompt-tag">Tempera-Painting</span><p class="prompt-description">(Mattemed pigments bound with egg yolk, precise small strokes, bright long-lasting coloration)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Fresnel-Painting.png"><span class="prompt-tag">Fresnel-Painting</span><p class="prompt-description">(Luminous wall-painting technique, mineral pigments, durable surface, soft radiance, fresco-like blending)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Line-Art.png"><span class="prompt-tag">Line-Art</span><p class="prompt-description">(Clean uniform outlines, no shading, flat cartoon-like contour emphasis, coloring-book simplicity) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Ligne-Claire-style.png"><span class="prompt-tag">Ligne-Claire-style</span><p class="prompt-description">(tintin-cartoon-clear linework, thick uniform outlines, bright flat coloring, no gradients, tidy composition, sharp details, simplified geometry)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Vector-Art.png"><span class="prompt-tag">Vector-Art</span><p class="prompt-description">(Sharp mathematically perfect edges, scalable flat shapes, smooth gradients or solids, digital precision) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Flat-Design.png"><span class="prompt-tag">Flat-Design</span><p class="prompt-description">(Minimalist shapes, no gradients, corporate visual language, clean geometry, simple color schemes) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Risograph-style.png"><span class="prompt-tag">Risograph-style</span><p class="prompt-description">(rough ink grain texture, vibrant spot inks, translucent ink overlays, misaligned dual-color overprint, overlapping plates/blocks, layered screen-print aesthetic, halftone dot/grain texture, uneven ink coverage, slight smudging,illustration,made with shapes that overlap)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Halftone.png"><span class="prompt-tag">Halftone</span><p class="prompt-description">(Dot-pattern shading, vintage comic newspaper texture, variable dot density forming tones) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Vintage-Botanical.png"><span class="prompt-tag">Vintage-Botanical</span><p class="prompt-description">(Scientific illustration style, high detail, thin ink lines, watercolor tint, isolated on white) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Fantasy-Storybook.png"><span class="prompt-tag">Fantasy-Storybook</span><p class="prompt-description">(Whimsical linework, antique muted palette, intricate details, Arthur Rackham fairy-tale aesthetic) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Medieval-Illumination.png"><span class="prompt-tag">Medieval-Illumination</span><p class="prompt-description">(Gold leaf accents, ornate borders, parchment texture, flat decorative scenes, marginalia flourishes) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Sticker-Art.png"><span class="prompt-tag">Sticker-Art</span><p class="prompt-description">(Thick white outlines, die-cut silhouette, flat bold colors, clean graphic cutout style) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Graffiti-Street-Art.png"><span class="prompt-tag">Graffiti-Street-Art</span><p class="prompt-description">(Spray-paint textures, bold tagging, drips, stencils, urban wall aesthetic, vivid street colors) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Tattoo-Flash.png"><span class="prompt-tag">Tattoo-Flash</span><p class="prompt-description">(Bold black outlines, classic shading, isolated motif, traditional tattoo palette and form) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Chalk-Art.png"><span class="prompt-tag">Chalk-Art</span><p class="prompt-description">(Vibrant powdery pastels on rough asphalt, temporary street-art look, soft smudging and grain) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Scientific-Illustration.png"><span class="prompt-tag">Scientific-Illustration</span><p class="prompt-description">(Precise technical details, cross-sections, labeled structures, accurate rendering for study) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div></div>
+                </div><div class="category">
+                    <h2 class="category-title">ANIMATION &amp; COMICS</h2>
+                    <div class="category-controls">
+                        <button class="add-prompt-btn" data-category="ANIMATION &amp; COMICS">Add Prompt</button>
+                        <button class="delete-category-btn" data-category="ANIMATION &amp; COMICS">Delete Category</button>
+                    </div>
+                    <div class="prompt-grid" id="Main Page-ANIMATION &amp; COMICS-grid"><div class="prompt-card"><img class="prompt-image" src="images/Anime.png"><span class="prompt-tag">Anime</span><p class="prompt-description">(Stylized Japanese animation look, clean lines, expressive eyes, flat shading, bright colors) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Studio-Ghibli.png"><span class="prompt-tag">Studio-Ghibli</span><p class="prompt-description">(Lush painterly backgrounds, soft color harmony, expressive rounded character design, magical warmth) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Manga.png"><span class="prompt-tag">Manga</span><p class="prompt-description">(Black-and-white ink style, screen tones, dynamic speed lines, stylized anatomy, crisp line weights) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Western-Comic-Book.png"><span class="prompt-tag">Western-Comic-Book</span><p class="prompt-description">(Bold inks, vivid colors, dynamic poses, Ben-Day dots, heroic exaggerated action) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Noir-Graphic-Novel.png"><span class="prompt-tag">Noir-Graphic-Novel</span><p class="prompt-description">(Extreme black-and-white contrast, harsh shadows, gritty atmosphere, Frank Miller storytelling tone) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Cel-Shaded.png"><span class="prompt-tag">Cel-Shaded</span><p class="prompt-description">(Flat color regions with hard-edged shadows, toon-outlined look, simplified lighting) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Chibi.png"><span class="prompt-tag">Chibi</span><p class="prompt-description">(Super-deformed proportions, oversized heads, tiny bodies, exaggerated cuteness) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Rotoscoping.png"><span class="prompt-tag">Rotoscoping</span><p class="prompt-description">(Fluid lifelike movement recreated through traced live-action, smooth outlines, cartoon realistic motion) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/80s-Retro-Anime.png"><span class="prompt-tag">80s-Retro-Anime</span><p class="prompt-description">(Classic OVA aesthetic, cel-shaded with visible film grain, vibrant but limited color palette, heavy outlines, character designs often feature high contrast hair and large, glossy eyes, Akira or Macross inspired) [SUBJECT]
+</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Seinen-Anime-Style.png"><span class="prompt-tag">Seinen-Anime-Style</span><p class="prompt-description">(Mature themes, more realistic proportions and detailed anatomy, muted or darker color palette, heavier use of shadows and atmospheric lighting, complex, gritty linework, Ghost in the Shell or Berserk influence)[SUBJECT]
+</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Makoto-Shinkai-style.png"><span class="prompt-tag">Makoto-Shinkai-style</span><p class="prompt-description">(Hyper-detailed backgrounds, photorealistic environments, glowing skies, dramatic lens flare, soft golden-hour or sunset lighting, vibrant color saturation, deep feeling of nostalgia/longing)
+[SUBJECT]
+</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Hanna-Barbera-Style.png"><span class="prompt-tag">Hanna-Barbera-Style</span><p class="prompt-description">(Limited animation technique, repeated backgrounds, simplified character designs with bold colors, thick outlines, often used for adventure or Scooby-Doo-esque mystery genres)
+[SUBJECT]
+</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/90s-Nickelodeon-Cartoon.png"><span class="prompt-tag">90s-Nickelodeon-Cartoon</span><p class="prompt-description">(Quirky, often grotesque or exaggerated character designs, vibrant and sometimes jarring color palettes, slightly grungy or "ugly" aesthetic, bold outlines, highly expressive and non-traditional animation)
+[SUBJECT]
+</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Golden-Age-Cartoon.png"><span class="prompt-tag">Golden-Age-Cartoon</span><p class="prompt-description">( highly elastic and bouncy characters, pie-cut eyes, simple circular limbs with white gloves, low detail on backgrounds, black and white or limited color, exaggerated squash and stretch movement)
+[SUBJECT]
+</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Rubber-Hose-Animation.png"><span class="prompt-tag">Rubber-Hose-Animation</span><p class="prompt-description">(Bouncy, limbless limbs, circular forms, exaggerated elastic motion, vintage 1920s–1930s cartoon fluidity, simple color palette, whimsical expressive poses) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/New_Prompt.jpg" style="display: none;"><span class="prompt-tag">New Prompt</span><p class="prompt-description">Description...</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/New_Prompt.jpg" style="display: none;"><span class="prompt-tag">New Prompt</span><p class="prompt-description">Description...</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/New_Prompt.jpg" style="display: none;"><span class="prompt-tag">New Prompt</span><p class="prompt-description">Description...</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div></div>
+                </div><div class="category">
+                    <h2 class="category-title">3D / DIGITAL RENDERING</h2>
+                    <div class="category-controls">
+                        <button class="add-prompt-btn" data-category="3D / DIGITAL RENDERING">Add Prompt</button>
+                        <button class="delete-category-btn" data-category="3D / DIGITAL RENDERING">Delete Category</button>
+                    </div>
+                    <div class="prompt-grid" id="Main Page-3D / DIGITAL RENDERING-grid"><div class="prompt-card"><img class="prompt-image" src="images/AAA-Game-Realism.png"><span class="prompt-tag">AAA-Game-Realism</span><p class="prompt-description">(3D High-texture PBR materials, complex cgi lighting)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/3D-Render.png"><span class="prompt-tag">3D-Render</span><p class="prompt-description">(Ray-traced reflections, global illumination, Octane/Redshift-like realism, polished CG materials) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/3D-Disney-style.png"><span class="prompt-tag">3D-Disney-style</span><p class="prompt-description">(3D pixar rendering, textures,volumetric depth, natural colors,  visible, detailed  materials, realistic anatomy / object proportions) 
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Hand-Painted-Texture.png"><span class="prompt-tag">Hand-Painted-Texture</span><p class="prompt-description">(Visible brushstrokes on 3D surfaces, stylized game look, color-blocked shading, crafted feel) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Stylized-3D-(Blizzard-like).png"><span class="prompt-tag">Stylized-3D-(Blizzard-like)</span><p class="prompt-description">(Exaggerated forms, hand-painted textures, high contrast)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/3D-isometric-style.png"><span class="prompt-tag">3D-isometric-style</span><p class="prompt-description">(Isometric view, objects and characters drawn at a consistent 30-degree angle, precise geometric proportions, clean edges, detailed textures, vibrant but balanced colors, soft lighting and shadows, clear depth perception, minimal perspective distortion, digital 3D render look) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Low-Poly.png"><span class="prompt-tag">Low-Poly</span><p class="prompt-description">(Geometric faceted mesh, sharp polygonal planes, minimal textures, simplified forms) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Claymation-Aardman.png"><span class="prompt-tag">Claymation-Aardman</span><p class="prompt-description">(Plasticine texture, thumbprints visible on surface, rounded bulky shapes, stop-motion lighting, physical set background) [SUBJECT]
+</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Polymer-clay-model.png"><span class="prompt-tag">Polymer-clay-model</span><p class="prompt-description">(sculpey figure, smooth matte texture, hand-sculpted miniature) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Procedural-Generation.png"><span class="prompt-tag">Procedural-Generation</span><p class="prompt-description">(Algorithmic patterns, endlessly detailed textures, mathematically driven repetition and structure) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Voxel-Art.png"><span class="prompt-tag">Voxel-Art</span><p class="prompt-description">(3D pixel-cube construction, blocky volumetric design, Minecraft-like structure) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Isometric.png"><span class="prompt-tag">Isometric</span><p class="prompt-description">(Three-quarter perspective from a corner view, equal axes, illustration) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Pixel-art.png"><span class="prompt-tag">Pixel-art</span><p class="prompt-description">(dense pixel detail, 1px clean edging, micro-dither shading, small-palette color control, sharp geometric pixel shapes, layered tile-sprite construction)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div></div>
+                </div><div class="category">
+                    <h2 class="category-title">AESTHETIC GENRES</h2>
+                    <div class="category-controls">
+                        <button class="add-prompt-btn" data-category="AESTHETIC GENRES">Add Prompt</button>
+                        <button class="delete-category-btn" data-category="AESTHETIC GENRES">Delete Category</button>
+                    </div>
+                    <div class="prompt-grid" id="Main Page-AESTHETIC GENRES-grid"><div class="prompt-card"><img class="prompt-image" src="images/Needle-Felt.png"><span class="prompt-tag">Needle-Felt</span><p class="prompt-description">(Fuzzy wool texture, soft sculpted shapes, miniature craft aesthetic with visible fibers)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Quilling-art.png"><span class="prompt-tag">Quilling-art</span><p class="prompt-description">(rolled paper sculpture, delicate paper strips, intricate filigree paper) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Kirigami-paper-art.png"><span class="prompt-tag">Kirigami-paper-art</span><p class="prompt-description">(pop-up book style, cut and folded paper, paper-lace silhouette) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Amigurumi-doll.png"><span class="prompt-tag">Amigurumi-doll</span><p class="prompt-description">[crocheted toy, yarn texture, visible stitching, chibi plushie] [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Pyrography-art.png"><span class="prompt-tag">Pyrography-art</span><p class="prompt-description">(wood burning detail, etched wood surface, rustic carving)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/FrameBeadworkpattern.png"><span class="prompt-tag">FrameBeadworkpattern</span><p class="prompt-description">(intricate beaded design, segmented texture, reflective glass beads, shaped beadwork)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Stained-Glass.png"><span class="prompt-tag">Stained-Glass</span><p class="prompt-description">(Bold black lines forming the contours, translucent, jeweled colors, light streaming through the colored panes, segmented composition, religious or gothic subject matter, lead-came framing, luminous radiance)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Mosaic.png"><span class="prompt-tag">Mosaic</span><p class="prompt-description">(Image composed entirely of small, individually colored square or irregular tiles (tesserae), deep grouted lines, ancient Byzantine or Roman texture, slightly uneven surface, rich stone colors, highly detailed)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Encaustic-Painting.png"><span class="prompt-tag">Encaustic-Painting</span><p class="prompt-description">(Layers of heated beeswax mixed with pigments, luminous textured surfaces, warm radiant tones, subtle translucency, rich surface depth, tactile brushstrokes)  
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Ukiyo-e-Inspired.png"><span class="prompt-tag">Ukiyo-e-Inspired</span><p class="prompt-description">(Bold woodblock outlines, flat areas of color, dynamic Japanese print composition, stylized figures, ornamental patterns, Edo-period aesthetic, narrative storytelling)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Scribble-Art-Style.png"><span class="prompt-tag">Scribble-Art-Style</span><p class="prompt-description">(Loose spontaneous linework, continuous overlapping strokes, chaotic energetic contours, sketchy hand-drawn texture, abstract or semi-representational forms, dynamic movement, visible pressure variation, raw expressive mark-making with no clean outlines) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Memphis-style.png"><span class="prompt-tag">Memphis-style</span><p class="prompt-description">(80s geometric chaos, squiggles, bright neon, asymmetric shapes, playful retro abstraction vector) [SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Embroidery-Cross-Stitch.png"><span class="prompt-tag">Embroidery-Cross-Stitch</span><p class="prompt-description">(Thread-based image with stitched patterns, woven texture, pixel-like handmade appearance)[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Technical-Blueprint-style.png"><span class="prompt-tag">Technical-Blueprint-style</span><p class="prompt-description">(White-line diagrams on blue boards, engineering precision)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Paper-Cutout-Layered.png"><span class="prompt-tag">Paper-Cutout-Layered</span><p class="prompt-description">(Diorama style, stacked layers of paper, depth via drop shadows, simple shapes, craft paper texture, tunnel book aesthetic)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div></div>
+                </div><div class="category">
+                    <h2 class="category-title">EXTRA STYLES</h2>
+                    <div class="category-controls">
+                        <button class="add-prompt-btn" data-category="EXTRA STYLES">Add Prompt</button>
+                        <button class="delete-category-btn" data-category="EXTRA STYLES">Delete Category</button>
+                    </div>
+                    <div class="prompt-grid" id="Main Page-EXTRA STYLES-grid"><div class="prompt-card"><img class="prompt-image" src="images/Chinoiserie-style.png"><span class="prompt-tag">Chinoiserie-style</span><p class="prompt-description">(European interpretation of Chinese artistic traditions, ornate detailed landscapes, delicate figures, pagodas, porcelain blue and white color scheme, gold accents, highly decorative elegance)
+[SUBJECT]</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Mughal-Miniature.png"><span class="prompt-tag">Mughal-Miniature</span><p class="prompt-description">(Intricate hand-painted detail, vibrant jewel-toned colors, gold leaf highlights, flat perspective, highly stylized figures and nature, traditional South Asian court art)
+[SUBJECT]
+</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Caricature-Art-Exaggerated.png"><span class="prompt-tag">Caricature-Art-Exaggerated</span><p class="prompt-description">(Focuses on highly stylized and humorous exaggeration of facial features and body proportions to emphasize personality traits, bold outlines and dynamic line work)
+[SUBJECT]
+</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Photorealistic-Pencil-Drawing.png"><span class="prompt-tag">Photorealistic-Pencil-Drawing</span><p class="prompt-description">(Extreme level of graphite detail that mimics a photograph, smooth shading with almost no visible pencil texture, hyperrealism in monochrome, fine, precise rendering)
+[SUBJECT]
+</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div><div class="prompt-card"><img class="prompt-image" src="images/Newspaper-Comic-Strip-Style.png"><span class="prompt-tag">Newspaper-Comic-Strip-Style</span><p class="prompt-description">(Simple, ink-drawn figures, often with thick black lines, minimal use of color (often only four-color process or black and white), small panel composition, focus on dialogue and gag setup)
+[Main-subject]
+"text"
+"text" 
+"text"
+[SUBJECT]
+</p><div class="edit-buttons"><button>Edit</button><button class="delete">Delete</button><button title="Move Left">←</button><button title="Move Right">→</button></div></div></div>
+                </div></div>
+    <div id="copy-message" class="copy-message">Copied complete prompt to clipboard!</div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Edit Prompt</h3>
+            <textarea id="edit-text"></textarea>
+            <div class="modal-buttons">
+                <button class="save" id="save-edit">Save</button>
+                <button class="cancel" id="cancel-edit">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div id="category-modal" class="modal">
+        <div class="modal-content">
+            <h3>Add New Category</h3>
+            <input type="text" id="category-name" placeholder="Category Name">
+            <div class="modal-buttons">
+                <button class="save" id="save-category">Save</button>
+                <button class="cancel" id="cancel-category">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize data structure
+        let prompts = {
+            pages: {}
+        };
+
+        let currentPage = null;
+        let currentEditCard = null;
+        let currentEditCategory = null;
+        let currentEditPrompt = null;
+
+        // Initial data to migrate
+        const initialData = {"pages":{"Main Page":{"HISTORICAL ART MOVEMENTS":[{"tag":"Renaissance-Style","description":"(Classical realism with precision, balanced composition, sfumato transitions, harmonious-proportions, and naturalistic lighting ) [SUBJECT]"},{"tag":"Baroque-style","description":"(Dramatic chiaroscuro, dynamic poses, rich detail, theatrical emotions, heavy contrast, and a sense of grandeur and movement) [SUBJECT]"},{"tag":"Rococo-paint-style","description":"(Ornate decorative details , soft glowing light, delicate flowing shapes, intricate patterns, graceful , oil painting, soft brushstrokes, visible brush texture, painterly style 1700s-1800s, fine detail, luminous lighting ) [SUBJECT]"},{"tag":"Neoclassical-paint-style","description":"(Austere compositions inspired by Roman and Greek art, heroic poses, moral seriousness, strong contour lines, balanced composition, oil painting, fine brushstrokes, visible brush texture, muted color palette, soft but precise lighting, painterly style 18th-19th century, realistic details) [SUBJECT]\n"},{"tag":"Romanticism-style","description":"(Emotional intensity, dramatic landscapes, expressive brushwork, sublime nature, stormy lighting, and heightened atmosphere)"},{"tag":"Impressionism-style","description":"(Visible short brushstrokes, emphasis on light changes, soft edges, plein-air feeling, broken color, Monet-like luminosity) [SUBJECT]"},{"tag":"Pointillism-style","description":"(Image constructed only from countless distinct colored dots, optical color blending, crisp contours made only with micro-points) [SUBJECT]"},{"tag":"Futurism","description":"(Dynamic movement lines, industrial energy, speed, overlapping forms suggesting motion and force) [SUBJECT]"},{"tag":"Surrealism-art-style","description":"(Dreamlike surreal realistic painting, chromatic, intricate, bizarre paradoxical, illogical and symbolic, abstracted, metaphorical, impossible bizarre scenarios, morphing, melting, floating, levitating, twisting perspectives, juxtaposed enigmatic objects, mismatched improbable situations, fully shaped drawing = complete, clean spaces composition)\n[SUBJECT]\n[ENVIROMENT]"},{"tag":"Expressionism-art-style","description":"(Distorted forms, exaggerated colors, emotional intensity, energetic strokes, subjective and psychological atmosphere) [SUBJECT]"},{"tag":"Fauvism-art-style","description":"(Vivid unnatural colors, simplified forms, expressive painterly marks, raw emotional color fields) [SUBJECT]"},{"tag":"Cubism-art-style","description":"(Fragmented geometry, multiple perspectives at once, abstract planar shapes, analytical structure, faceted construction) [SUBJECT]"},{"tag":"Abstract-Expressionism","description":"(Spontaneous gestures, dynamic splashes, textured paint, emotional abstraction, Pollock-inspired energy) \n[SUBJECT]"},{"tag":"Fresco-Painting","description":"(Ancient wall painting on wet plaster, matte earthy pigments, slightly desaturated, texture of aging wall, cracking plaster, renaissance feel) [SUBJECT]"},{"tag":"Art-Nouveau-style","description":"(Flowing organic lines, decorative floral motifs, graceful curves, soft palettes, flat stylization inspired by Mucha) [SUBJECT]"},{"tag":"Art-Deco-style","description":"(Geometric symmetry, flat , metallic accents, gold tones, streamlined elegance, luxury shapes, 1920s decorative styling) [SUBJECT]"},{"tag":"Pop-Art","description":"(Bold comic-like colors, commercial imagery, flat tones, repetition, Warhol/Lichtenstein graphic aesthetic)\n[SUBJECT]"},{"tag":"De-Stijl","description":"(Strict grids, black outlines, primary color rectangles, strong alignment, Mondrian-like abstraction) [SUBJECT]"},{"tag":"Bauhaus-art","description":"(Functional geometry, clean industrial design, primary colors, minimalist structure , flat illustration, utilitarian visual language)\n[SUBJECT]"},{"tag":"Dadaism","description":"(Absurdist collage, anti-art randomness, chaotic composition, satirical and nonsensical elements) [SUBJECT]"},{"tag":"Op-Art","description":"(High-contrast optical illusions, repetitive patterns, moiré effects, geometric distortions in black-and-white) [SUBJECT]"}],"TRADITIONAL MEDIA":[{"tag":"Oil-Painting","description":"(Thick textured brushstrokes, impasto depth, smooth color blending, glossy surface, classical painted look) [SUBJECT]"},{"tag":"Watercolor","description":"(Translucent washes, wet-on-wet diffusion, soft gradients, delicate splatter effects, fluid edges) [SUBJECT]"},{"tag":"Charcoal-Drawing","description":"(Smudged textures, deep blacks, high contrast shading, gritty tonal transitions, expressive strokes) [SUBJECT]"},{"tag":"Ink-Wash-Sumi-e","description":"(Black ink gradients, fluid brush control, minimalist strokes, controlled density variation, negative space emphasis) [SUBJECT]"},{"tag":"Pencil-Sketch","description":"(Graphite texture, cross-hatching, loose outlines, soft shading, hand-drawn realism or rough study feel) [SUBJECT]"},{"tag":"Pastel-Art","description":"(Soft powdery pigment, visible grain, vibrant matte colors, gentle blending, velvety surface, big pastel strokes)\n[SUBJECT]"},{"tag":"Linocut-Woodcut","description":"(Bold carved shapes, thick black outlines, high contrast, stamping-like irregularities, wood-block-print texture) [SUBJECT]"},{"tag":"Scratchboard","description":"(White lines carved from black surface, crisp highlights, dramatic contrast, engraved illustration style) [SUBJECT]"},{"tag":"Cyanotype","description":"(Blue-and-white photogram appearance, soft silhouettes, sun-print textures, analog exposure softness) [SUBJECT]"},{"tag":"Gouache-style","description":"(Opaque matte pigments, flat multilayered overlaping water colors, chalky texture, crisp edges with occasional brush grain,uncoloared areas gaps, detailed) [SUBJECT]"},{"tag":"Aquarelle-style","description":"(French watercolor style with luminous washes, flowing light, airy transparency, delicate hue shifts)\n[SUBJECT]"},{"tag":"Tempera-Painting","description":"(Mattemed pigments bound with egg yolk, precise small strokes, bright long-lasting coloration)\n[SUBJECT]"},{"tag":"Fresnel-Painting","description":"(Luminous wall-painting technique, mineral pigments, durable surface, soft radiance, fresco-like blending)\n[SUBJECT]"},{"tag":"Line-Art","description":"(Clean uniform outlines, no shading, flat cartoon-like contour emphasis, coloring-book simplicity) [SUBJECT]"},{"tag":"Ligne-Claire-style","description":"(tintin-cartoon-clear linework, thick uniform outlines, bright flat coloring, no gradients, tidy composition, sharp details, simplified geometry)\n[SUBJECT]"},{"tag":"Vector-Art","description":"(Sharp mathematically perfect edges, scalable flat shapes, smooth gradients or solids, digital precision) [SUBJECT]"},{"tag":"Flat-Design","description":"(Minimalist shapes, no gradients, corporate visual language, clean geometry, simple color schemes) [SUBJECT]"},{"tag":"Risograph-style","description":"(rough ink grain texture, vibrant spot inks, translucent ink overlays, misaligned dual-color overprint, overlapping plates/blocks, layered screen-print aesthetic, halftone dot/grain texture, uneven ink coverage, slight smudging,illustration,made with shapes that overlap)\n[SUBJECT]"},{"tag":"Halftone","description":"(Dot-pattern shading, vintage comic newspaper texture, variable dot density forming tones) [SUBJECT]"},{"tag":"Vintage-Botanical","description":"(Scientific illustration style, high detail, thin ink lines, watercolor tint, isolated on white) [SUBJECT]"},{"tag":"Fantasy-Storybook","description":"(Whimsical linework, antique muted palette, intricate details, Arthur Rackham fairy-tale aesthetic) [SUBJECT]"},{"tag":"Medieval-Illumination","description":"(Gold leaf accents, ornate borders, parchment texture, flat decorative scenes, marginalia flourishes) [SUBJECT]"},{"tag":"Sticker-Art","description":"(Thick white outlines, die-cut silhouette, flat bold colors, clean graphic cutout style) [SUBJECT]"},{"tag":"Graffiti-Street-Art","description":"(Spray-paint textures, bold tagging, drips, stencils, urban wall aesthetic, vivid street colors) [SUBJECT]"},{"tag":"Tattoo-Flash","description":"(Bold black outlines, classic shading, isolated motif, traditional tattoo palette and form) [SUBJECT]"},{"tag":"Chalk-Art","description":"(Vibrant powdery pastels on rough asphalt, temporary street-art look, soft smudging and grain) [SUBJECT]"},{"tag":"Scientific-Illustration","description":"(Precise technical details, cross-sections, labeled structures, accurate rendering for study) [SUBJECT]"}],"ANIMATION & COMICS":[{"tag":"Anime","description":"(Stylized Japanese animation look, clean lines, expressive eyes, flat shading, bright colors) [SUBJECT]"},{"tag":"Studio-Ghibli","description":"(Lush painterly backgrounds, soft color harmony, expressive rounded character design, magical warmth) [SUBJECT]"},{"tag":"Manga","description":"(Black-and-white ink style, screen tones, dynamic speed lines, stylized anatomy, crisp line weights) [SUBJECT]"},{"tag":"Western-Comic-Book","description":"(Bold inks, vivid colors, dynamic poses, Ben-Day dots, heroic exaggerated action) [SUBJECT]"},{"tag":"Noir-Graphic-Novel","description":"(Extreme black-and-white contrast, harsh shadows, gritty atmosphere, Frank Miller storytelling tone) [SUBJECT]"},{"tag":"Cel-Shaded","description":"(Flat color regions with hard-edged shadows, toon-outlined look, simplified lighting) [SUBJECT]"},{"tag":"Chibi","description":"(Super-deformed proportions, oversized heads, tiny bodies, exaggerated cuteness) [SUBJECT]"},{"tag":"Rotoscoping","description":"(Fluid lifelike movement recreated through traced live-action, smooth outlines, cartoon realistic motion) [SUBJECT]"},{"tag":"80s-Retro-Anime","description":"(Classic OVA aesthetic, cel-shaded with visible film grain, vibrant but limited color palette, heavy outlines, character designs often feature high contrast hair and large, glossy eyes, Akira or Macross inspired) [SUBJECT]\n"},{"tag":"Seinen-Anime-Style","description":"(Mature themes, more realistic proportions and detailed anatomy, muted or darker color palette, heavier use of shadows and atmospheric lighting, complex, gritty linework, Ghost in the Shell or Berserk influence)[SUBJECT]\n"},{"tag":"Makoto-Shinkai-style","description":"(Hyper-detailed backgrounds, photorealistic environments, glowing skies, dramatic lens flare, soft golden-hour or sunset lighting, vibrant color saturation, deep feeling of nostalgia/longing)\n[SUBJECT]\n"},{"tag":"Hanna-Barbera-Style","description":"(Limited animation technique, repeated backgrounds, simplified character designs with bold colors, thick outlines, often used for adventure or Scooby-Doo-esque mystery genres)\n[SUBJECT]\n"},{"tag":"90s-Nickelodeon-Cartoon","description":"(Quirky, often grotesque or exaggerated character designs, vibrant and sometimes jarring color palettes, slightly grungy or \"ugly\" aesthetic, bold outlines, highly expressive and non-traditional animation)\n[SUBJECT]\n"},{"tag":"Golden-Age-Cartoon","description":"( highly elastic and bouncy characters, pie-cut eyes, simple circular limbs with white gloves, low detail on backgrounds, black and white or limited color, exaggerated squash and stretch movement)\n[SUBJECT]\n"},{"tag":"Rubber-Hose-Animation","description":"(Bouncy, limbless limbs, circular forms, exaggerated elastic motion, vintage 1920s–1930s cartoon fluidity, simple color palette, whimsical expressive poses) [SUBJECT]"},{"tag":"New Prompt","description":"Description..."},{"tag":"New Prompt","description":"Description..."},{"tag":"New Prompt","description":"Description..."}],"3D / DIGITAL RENDERING":[{"tag":"AAA-Game-Realism","description":"(3D High-texture PBR materials, complex cgi lighting)\n[SUBJECT]"},{"tag":"3D-Render","description":"(Ray-traced reflections, global illumination, Octane/Redshift-like realism, polished CG materials) [SUBJECT]"},{"tag":"3D-Disney-style","description":"(3D pixar rendering, textures,volumetric depth, natural colors,  visible, detailed  materials, realistic anatomy / object proportions) \n[SUBJECT]"},{"tag":"Hand-Painted-Texture","description":"(Visible brushstrokes on 3D surfaces, stylized game look, color-blocked shading, crafted feel) [SUBJECT]"},{"tag":"Stylized-3D-(Blizzard-like)","description":"(Exaggerated forms, hand-painted textures, high contrast)\n[SUBJECT]"},{"tag":"3D-isometric-style","description":"(Isometric view, objects and characters drawn at a consistent 30-degree angle, precise geometric proportions, clean edges, detailed textures, vibrant but balanced colors, soft lighting and shadows, clear depth perception, minimal perspective distortion, digital 3D render look) [SUBJECT]"},{"tag":"Low-Poly","description":"(Geometric faceted mesh, sharp polygonal planes, minimal textures, simplified forms) [SUBJECT]"},{"tag":"Claymation-Aardman","description":"(Plasticine texture, thumbprints visible on surface, rounded bulky shapes, stop-motion lighting, physical set background) [SUBJECT]\n"},{"tag":"Polymer-clay-model","description":"(sculpey figure, smooth matte texture, hand-sculpted miniature) [SUBJECT]"},{"tag":"Procedural-Generation","description":"(Algorithmic patterns, endlessly detailed textures, mathematically driven repetition and structure) [SUBJECT]"},{"tag":"Voxel-Art","description":"(3D pixel-cube construction, blocky volumetric design, Minecraft-like structure) [SUBJECT]"},{"tag":"Isometric","description":"(Three-quarter perspective from a corner view, equal axes, illustration) [SUBJECT]"},{"tag":"Pixel-art","description":"(dense pixel detail, 1px clean edging, micro-dither shading, small-palette color control, sharp geometric pixel shapes, layered tile-sprite construction)\n[SUBJECT]"}],"AESTHETIC GENRES":[{"tag":"Needle-Felt","description":"(Fuzzy wool texture, soft sculpted shapes, miniature craft aesthetic with visible fibers)\n[SUBJECT]"},{"tag":"Quilling-art","description":"(rolled paper sculpture, delicate paper strips, intricate filigree paper) [SUBJECT]"},{"tag":"Kirigami-paper-art","description":"(pop-up book style, cut and folded paper, paper-lace silhouette) [SUBJECT]"},{"tag":"Amigurumi-doll","description":"[crocheted toy, yarn texture, visible stitching, chibi plushie] [SUBJECT]"},{"tag":"Pyrography-art","description":"(wood burning detail, etched wood surface, rustic carving)\n[SUBJECT]"},{"tag":"FrameBeadworkpattern","description":"(intricate beaded design, segmented texture, reflective glass beads, shaped beadwork)\n[SUBJECT]"},{"tag":"Stained-Glass","description":"(Bold black lines forming the contours, translucent, jeweled colors, light streaming through the colored panes, segmented composition, religious or gothic subject matter, lead-came framing, luminous radiance)\n[SUBJECT]"},{"tag":"Mosaic","description":"(Image composed entirely of small, individually colored square or irregular tiles (tesserae), deep grouted lines, ancient Byzantine or Roman texture, slightly uneven surface, rich stone colors, highly detailed)\n[SUBJECT]"},{"tag":"Encaustic-Painting","description":"(Layers of heated beeswax mixed with pigments, luminous textured surfaces, warm radiant tones, subtle translucency, rich surface depth, tactile brushstrokes)  \n[SUBJECT]"},{"tag":"Ukiyo-e-Inspired","description":"(Bold woodblock outlines, flat areas of color, dynamic Japanese print composition, stylized figures, ornamental patterns, Edo-period aesthetic, narrative storytelling)\n[SUBJECT]"},{"tag":"Scribble-Art-Style","description":"(Loose spontaneous linework, continuous overlapping strokes, chaotic energetic contours, sketchy hand-drawn texture, abstract or semi-representational forms, dynamic movement, visible pressure variation, raw expressive mark-making with no clean outlines) [SUBJECT]"},{"tag":"Memphis-style","description":"(80s geometric chaos, squiggles, bright neon, asymmetric shapes, playful retro abstraction vector) [SUBJECT]"},{"tag":"Embroidery-Cross-Stitch","description":"(Thread-based image with stitched patterns, woven texture, pixel-like handmade appearance)[SUBJECT]"},{"tag":"Technical-Blueprint-style","description":"(White-line diagrams on blue boards, engineering precision)\n[SUBJECT]"},{"tag":"Paper-Cutout-Layered","description":"(Diorama style, stacked layers of paper, depth via drop shadows, simple shapes, craft paper texture, tunnel book aesthetic)\n[SUBJECT]"}],"EXTRA STYLES":[{"tag":"Chinoiserie-style","description":"(European interpretation of Chinese artistic traditions, ornate detailed landscapes, delicate figures, pagodas, porcelain blue and white color scheme, gold accents, highly decorative elegance)\n[SUBJECT]"},{"tag":"Mughal-Miniature","description":"(Intricate hand-painted detail, vibrant jewel-toned colors, gold leaf highlights, flat perspective, highly stylized figures and nature, traditional South Asian court art)\n[SUBJECT]\n"},{"tag":"Caricature-Art-Exaggerated","description":"(Focuses on highly stylized and humorous exaggeration of facial features and body proportions to emphasize personality traits, bold outlines and dynamic line work)\n[SUBJECT]\n"},{"tag":"Photorealistic-Pencil-Drawing","description":"(Extreme level of graphite detail that mimics a photograph, smooth shading with almost no visible pencil texture, hyperrealism in monochrome, fine, precise rendering)\n[SUBJECT]\n"},{"tag":"Newspaper-Comic-Strip-Style","description":"(Simple, ink-drawn figures, often with thick black lines, minimal use of color (often only four-color process or black and white), small panel composition, focus on dialogue and gag setup)\n[Main-subject]\n\"text\"\n\"text\" \n\"text\"\n[SUBJECT]\n"}]},"CAMERA":{"CAMERA ANGLES & ORIENTATIONS":[{"tag":"LOW ANGLE","description":"[SUBJECT](Low-angle shot: camera positioned below eye level, looking up at the subject. Creates a sense of power, dominance, and monumentality. appears larger, more imposing against the background.)"},{"tag":"HIGH ANGLE","description":"[SUBJECT](High-angle shot: camera positioned above eye level, looking down at the subject. Creates vulnerability, smallness, or overview perspective. Subject appears diminished or subordinate in the frame.)"},{"tag":"EYE LEVEL","description":"[SUBJECT](Eye-level shot: camera positioned at the subject's eye height, creating neutral, natural perspective. Establishes equality and realism, neither empowering nor diminishing the subject.)"},{"tag":"EXTREME LOW ANGLE","description":"[SUBJECT](Extreme low-angle shot: camera positioned very close to ground level, looking sharply upward. Creates dramatic scale distortion, towering effect, and powerful sense of dominance or intimidation.)"},{"tag":"EXTREME HIGH ANGLE","description":"[SUBJECT](Extreme high-angle shot: camera positioned far above subject, looking steeply downward. Creates isolation, vulnerability, or god's-eye perspective. Subject appears tiny within vast environment.)"},{"tag":"WORM-EYE VIEW","description":"[SUBJECT](View from below the subject, worm's-eye perspective, camera close to ground, looking up. Exaggerated scale, low-angle composition, emphasizing height and dominance of the subject.)"},{"tag":"BIRD-EYE VIEW","description":"[SUBJECT](Mild aerial viewpoint: the camera is placed above the subject, angled downward to create a clear bird's-eye view without distortion.)"},{"tag":"DUTCH ANGLE","description":"[SUBJECT](Mild Dutch camera angle: the camera is intentionally tilted off-balance on the roll axis, giving the composition a diagonal, dynamic feel, but with only a small tilt—not a full rotation.)"},{"tag":"DUTCH TILT","description":"[SUBJECT](Dutch tilt composition: camera rolled on its axis, creating slanted horizon line and diagonal perspective. Generates tension, disorientation, or psychological unease in the frame.)"},{"tag":"CANTED ANGLE","description":"(Canted angle shot: camera tilted sideways off horizontal axis, creating oblique composition. Conveys instability, tension, or dynamic energy through off-kilter framing.)"},{"tag":"OVERHEAD ANGLE","description":"[SUBJECT](Overhead shot: camera positioned directly above subject, pointing straight down. Creates flat, graphic composition showing spatial relationships and patterns from above.)"},{"tag":"TOP-DOWN ANGLE","description":"[SUBJECT](Top-down perspective: camera looking directly downward onto subject from above. Emphasizes layout, arrangement, and spatial design with flattened perspective.)"},{"tag":"OBLIQUE ANGLE","description":"[SUBJECT](Oblique angle shot: camera positioned at diagonal angle to subject, neither parallel nor perpendicular. Creates depth, dimension, and dynamic three-dimensional perspective.)"},{"tag":"SIDE ANGLE","description":"[SUBJECT](Side-angle shot: camera positioned perpendicular to subject, capturing pure profile view. Emphasizes silhouette, outline, and lateral dimension of subject.)"},{"tag":"FRONT ANGLE","description":"[SUBJECT](Front-facing angle: camera positioned directly in front of subject, creating symmetrical frontal view. Establishes direct confrontation, intimacy, or formal presentation.)"},{"tag":"BACK ANGLE","description":"[SUBJECT](Back-angle shot: camera positioned behind subject, showing rear view. Creates mystery, anonymity, or shares subject's perspective of what lies ahead.)"},{"tag":"THREE-QUARTER ANGLE","description":"[SUBJECT](Three-quarter angle shot: camera positioned at 45-degree angle to subject, showing both front and side. Creates depth, dimensionality, and natural, flattering perspective.)"},{"tag":"PROFILE ANGLE","description":"[SUBJECT](Profile shot: camera capturing subject from pure side view, showing complete silhouette. Emphasizes facial features, body contour, and outline against background.)"},{"tag":"DIAGONAL ANGLE","description":"[SUBJECT](Strong diagonal layout: the composition positions the subject along a bold diagonal path, enhancing energy and flow within the frame.)"},{"tag":"TILT-UP ANGLE","description":"[SUBJECT](Tilt-up composition: camera angled upward from lower position, gradually revealing subject from bottom to top. Creates anticipation, grandeur, or revealing movement.)"},{"tag":"TILT-DOWN ANGLE","description":"[SUBJECT](Tilt-down composition: camera angled downward from higher position, showing subject from top descending. Creates survey, assessment, or descending perspective.)"},{"tag":"POV ANGLE","description":"[SUBJECT](Point-of-view shot: camera positioned to replicate exact perspective of a character's eyes. Creates immersive, subjective experience of seeing through character's viewpoint.)"},{"tag":"REVERSE POV ANGLE","description":"[SUBJECT](Reverse POV shot: camera showing what is looking at the POV character. Reveals the subject of character's gaze, completing visual conversation between perspectives.)"},{"tag":"BACK-TO-CAMERA ANGLE","description":"[SUBJECT](Back-to-camera shot: subject positioned with back toward camera, facing away. Creates anonymity, contemplation, or shares subject's forward-looking perspective.)"}],"CAMERA SHOTS (FRAMING / DISTANCE)":[{"tag":"EXTREME WIDE SHOT","description":"[SUBJECT](Extreme wide shot: camera positioned very far from subject, showing vast environment. Subject appears small within expansive landscape, emphasizing scale and context.)"},{"tag":"WIDE SHOT","description":"[SUBJECT](Wide shot: camera captures subject fully within environment, showing complete body and surrounding space. Establishes location, context, and spatial relationships.)"},{"tag":"LONG SHOT","description":"[SUBJECT](Long shot: camera positioned at distance showing full subject from head to toe with surrounding space. Balances subject presence with environmental context.)"},{"tag":"FULL BODY SHOT","description":"[SUBJECT](Full body shot: camera framing captures subject's entire body from head to feet. Shows complete physical presence, posture, and body language within frame.)"},{"tag":"MEDIUM LONG SHOT","description":"[SUBJECT](Medium long shot: camera frames subject from approximately knees upward. Often called \"cowboy shot,\" balancing body language visibility with facial detail.)"},{"tag":"MEDIUM SHOT","description":"[SUBJECT](Medium shot: camera frames subject from waist up, showing torso, arms, and head. Balances facial expression with body language and gestures.)"},{"tag":"MEDIUM CLOSE-UP","description":"[SUBJECT](Medium close-up shot: camera frames subject from chest upward, emphasizing face while including shoulders. Intimate yet maintaining some physical context.)"},{"tag":"CLOSE-UP","description":"[SUBJECT](Close-up: the camera is positioned very near the subject, capturing all subject in the frame.)"},{"tag":"EXTREME CLOSE-UP","description":"[SUBJECT](Extreme close-up shot: camera frames very tight on specific detail—eyes, mouth, hands, or object. Creates intense intimacy, emphasis, or dramatic focus.)"},{"tag":"MACRO SHOT","description":"[SUBJECT](Macro shot: camera with macro lens positioned extremely close to small subject, revealing minute details invisible to naked eye. Creates abstract, detailed, magnified perspective.)"},{"tag":"COWBOY SHOT","description":"[SUBJECT](Cowboy shot: camera frames subject from mid-thigh upward, traditionally showing gunbelt in Western films. Emphasizes stance, readiness, and body language.)"},{"tag":"KNEE SHOT","description":"[SUBJECT](Knee shot: camera frames subject from knees upward, showing most of body while maintaining facial detail. Provides strong sense of physical presence.)"},{"tag":"SHOULDER SHOT","description":"[SUBJECT](Shoulder shot: camera frames subject from shoulders up, focusing on face and upper torso. Creates intimacy while maintaining personal space boundary.)"},{"tag":"BUST SHOT","description":"[SUBJECT](Bust shot: camera frames subject from chest upward, capturing head, neck, and upper torso. Classic portrait framing emphasizing facial expression and upper body.)"},{"tag":"HEADSHOT","description":"[SUBJECT](Headshot: camera tightly frames subject's head and face, filling frame from top of head to just below chin. Maximum facial detail and emotional intimacy.)"},{"tag":"TIGHT SHOT","description":"[SUBJECT](Tight shot: camera framed extremely close to subject with minimal surrounding space. Creates claustrophobic, intense, or highly focused composition.)"}],"COMPOSITION-STYLE SHOT TAGS":[{"tag":"CENTERED COMPOSITION","description":"[SUBJECT](Centered composition: subject positioned in exact center of frame, creating symmetrical, balanced, formal arrangement. Emphasizes subject importance and stability.)"},{"tag":"RULE-OF-THIRDS COMPOSITION","description":"[SUBJECT](Rule-of-thirds composition: frame divided into 3x3 grid, subject positioned along gridlines or intersections. Creates balanced, natural, visually pleasing arrangement.)"},{"tag":"SYMMETRICAL SHOT","description":"[SUBJECT](Symmetrical shot: composition with balanced elements mirrored on either side of central axis. Creates harmony, formality, and aesthetic perfection.)"},{"tag":"ASYMMETRICAL SHOT","description":"[SUBJECT](Asymmetrical shot: composition with unbalanced element distribution, creating visual tension. Generates dynamic interest through intentional imbalance.)"},{"tag":"MINIMALIST SHOT","description":"[SUBJECT](Minimalist shot: composition with minimal elements, abundant empty space, simple forms. Emphasizes subject through reduction and negative space.)"},{"tag":"BUSY COMPOSITION","description":"[SUBJECT](Busy composition: frame filled with multiple elements, details, and visual information. Creates complexity, energy, or overwhelming sensory experience.)"},{"tag":"NEGATIVE SPACE SHOT","description":"[SUBJECT](Negative space shot: composition emphasizing empty areas around subject, using emptiness as design element. Creates isolation, focus, or breathing room.)"},{"tag":"LEADING LINES SHOT","description":"[SUBJECT](Leading lines composition: visual lines within frame guide viewer's eye toward subject. Creates depth, direction, and purposeful visual flow.)"},{"tag":"FOREGROUND FRAMING SHOT","description":"[SUBJECT](Foreground framing shot: elements in foreground create natural frame around subject. Adds depth, context, and directs attention to main subject.)"},{"tag":"OVER-THE-SHOULDER SHOT","description":"[SUBJECT](Over-the-shoulder shot: camera positioned behind one subject's shoulder, looking toward another. Creates conversational perspective and spatial relationship.)"},{"tag":"REACTION SHOT","description":"[SUBJECT](Reaction shot: camera captures subject responding to off-screen action or dialogue. Emphasizes emotional response and character perspective.)"},{"tag":"TWO-SHOT","description":"[SUBJECT](Two-shot: camera frames two subjects within same composition. Establishes relationship, interaction, or comparison between characters.)"},{"tag":"THREE-SHOT","description":"[SUBJECT](Three-shot: camera frames three subjects within composition, showing group dynamic. Creates triangular visual relationship and social interaction.)"},{"tag":"GROUP SHOT","description":"[SUBJECT](Group shot: camera captures multiple subjects arranged together in frame. Emphasizes collective presence, community, or ensemble dynamic.)"}],"MOVEMENT-RELATED CAMERA SHOTS":[{"tag":"TRACKING SHOT","description":"[SUBJECT](Tracking shot aesthetic: composition suggesting camera movement following subject laterally. Creates dynamic sense of motion, pursuit, or accompaniment.)"},{"tag":"DOLLY SHOT","description":"[SUBJECT](Dolly shot style: composition implying camera physically moving toward or away from subject on track. Creates smooth approach or retreat with depth change.)"},{"tag":"CRN-SHOT","description":"[SUBJECT](Crane shot perspective: composition suggesting camera positioned on crane, capable of sweeping vertical and horizontal movement. Creates grand, elevated, cinematic perspective.)"},{"tag":"BOOM SHOT","description":"[SUBJECT](Boom shot style: composition implying camera on boom arm, moving vertically. Creates rising or lowering perspective with dramatic reveal.)"},{"tag":"ZOOM SHOT","description":"[SUBJECT](Zoom shot aesthetic: composition suggesting focal length change, appearing to move closer or farther. Creates intensity increase or dramatic distance change.)"},{"tag":"PUSH-IN SHOT","description":"[SUBJECT](Push-in composition: framing suggesting camera moving steadily closer to subject. Creates building tension, intimacy, or focused attention.)"},{"tag":"PULL-BACK SHOT","description":"[SUBJECT](Pull-back composition: framing suggesting camera moving away from subject, revealing context. Creates revelation, scope expansion, or isolation.)"},{"tag":"PAN SHOT","description":"[SUBJECT](Pan shot style: composition implying horizontal camera rotation across scene. Creates sweeping survey, landscape revelation, or spatial exploration.)"},{"tag":"TILT SHOT","description":"[SUBJECT](Tilt shot aesthetic: composition suggesting vertical camera rotation, scanning up or down. Creates height revelation or vertical space exploration.)"},{"tag":"ARC SHOT","description":"[SUBJECT](Arc shot composition: framing suggesting camera moving in curved path around subject. Creates dimensional reveal, dynamic perspective, and circular motion.)"},{"tag":"360-DEGREE SHOT","description":"[SUBJECT](360-degree perspective: composition implying complete circular camera path around subject. Creates comprehensive spatial understanding and dynamic rotation.)"},{"tag":"STATIC SHOT","description":"[SUBJECT](Static shot: camera fixed in single position without movement. Creates stability, observation, and deliberate, contemplative framing.)"}],"LENS / PERSPECTIVE TYPE":[{"tag":"WIDE-ANGLE SHOT","description":"[SUBJECT](Wide-angle lens shot: composition showing expanded field of view with slight barrel distortion. Exaggerates space, depth, and environmental scope.)"},{"tag":"ULTRA-WIDE SHOT","description":"[SUBJECT](Ultra-wide lens shot: composition with extremely expanded field of view and pronounced barrel distortion. Creates dramatic spatial exaggeration and immersive perspective.)"},{"tag":"FISHEYE SHOT","description":"[SUBJECT](Fisheye lens shot: composition with spherical distortion creating circular, bulging perspective. Dramatically warps space, creating surreal, immersive viewpoint.)"},{"tag":"TELEPHOTO SHOT","description":"[SUBJECT](Telephoto lens shot: composition with compressed perspective, flattened depth, and narrow field of view. Creates isolated subject with beautifully blurred background.)"},{"tag":"PORTRAIT-LENS SHOT","description":"[SUBJECT](Portrait-lens shot: composition with shallow depth of field, subject sharp against softly blurred background. Creates pleasing bokeh and subject isolation.)"},{"tag":"MACRO-LENS SHOT","description":"[SUBJECT](Macro-lens shot: composition capturing extreme detail of small subject at very close range. Reveals microscopic textures and details with minimal depth of field.)"},{"tag":"TILT-SHIFT SHOT","description":"[SUBJECT](Tilt-shift lens shot: composition with selective focus plane, creating miniature effect or corrected perspective. Produces dreamy, toy-like, or architecturally corrected view.)"},{"tag":"ANAMORPHIC SHOT","description":"[SUBJECT](Anamorphic lens shot: composition with characteristic wide aspect ratio, horizontal lens flares, and oval bokeh. Creates cinematic, premium visual aesthetic.)"}],"SPECIAL POV / PERSPECTIVE":[{"tag":"FIRST-PERSON SHOT","description":"[SUBJECT](First-person perspective: camera represents character's own eyes, showing what they see. Creates immersive, subjective experience of being the character.)"},{"tag":"THIRD-PERSON SHOT","description":"[SUBJECT](Third-person perspective: camera observing subject from outside their body. Creates objective viewpoint watching character from external position.)"},{"tag":"OBJECT POV SHOT","description":"[SUBJECT](Object POV shot: camera positioned at perspective of inanimate object, showing scene from object's \"viewpoint.\" Creates unusual, creative perspective.)"},{"tag":"DRONE SHOT","description":"[SUBJECT](Drone shot perspective: elevated aerial view with smooth, floating quality. Creates sweeping, bird's-eye perspective with contemporary aesthetic.)"},{"tag":"SVC","description":"[SUBJECT](Surveillance camera angle: high-corner mounted perspective with wide-angle distortion, timestamp overlay aesthetic. Creates voyeuristic, security monitoring viewpoint.)"},{"tag":"SECURITY CAM ANGLE","description":"[SUBJECT](Security cam perspective: fixed high-angle viewpoint with grainy quality, suggesting CCTV footage. Creates documentary, monitoring, or found-footage aesthetic.)"},{"tag":"DASHCAM ANGLE","description":"[SUBJECT](Dashcam perspective: forward-facing view from vehicle dashboard, showing road ahead. Creates point-of-view from driver's position with characteristic wide angle.)"},{"tag":"VINTAGE FILM FILTER","description":"[SUBJECT](subtle warm tones, soft grain, gentle contrast, slightly faded colors, classic analog film look)\n"},{"tag":"COOL CINEMATIC FILTER","description":"[SUBJECT](clean teal-and-neutral tones, smooth contrast, soft shadows, modern cinematic color grading, no added objects)\n"},{"tag":"MSC-POV","description":"[SUBJECT](Microscope viewpoint: extreme magnification showing microscopic details with circular vignette. Creates scientific, detailed perspective of tiny subjects.)"},{"tag":"TSC-POV","description":"[SUBJECT](Telescope viewpoint: distant view through circular vignette, showing magnified far-away subjects. Creates astronomical, surveillance, or distant observation perspective.)"}]},"MATERIALS":{"ELEMENTAL MATERIALS":[{"tag":"FIRE-SHAPED-SUBJECT","description":"Fire shaped like a [SUBJECT], Glowing 3D realistic, Flickering, Lively, Intense, Warm, Dynamic, Blazing, Radiant, Ember-like, Smoke Rising, Heat Waves. [ENVIRONMENT]"},{"tag":"LAVA-SHAPED-SUBJECT","description":"Lava shaped like a [SUBJECT], Molten 3D realistic, Glowing, Flowing, Fiery, Viscous, Radiant, Smoky. [ENVIRONMENT]"},{"tag":"EARTH-SHAPED-SUBJECT","description":"Dirt shaped like a [SUBJECT], Textured 3D realistic, Crumbly, Dense, Organic, Rough, Natural, Soil Particles, Moss Accents. [ENVIRONMENT]"},{"tag":"ASH-SHAPED-SUBJECT","description":"Ash shaped like a [SUBJECT], Powdery ,wood heat chalky 3D realistic,  grey black , Dusty, Charred, Soft, Smoke residue, Dispersed particles burnt ashen. [ENVIRONMENT ]"},{"tag":"WATER-SHAPED-SUBJECT","description":"Water shaped like a [SUBJECT], Transparent 3D realistic, Liquid, Clear, Rippled, Flowing. [ENVIRONMENT]"},{"tag":"ICE-SHAPED-SUBJECT","description":"Ice shaped like a [SUBJECT], Transparent 3D realistic, Frosted, Crystalline, Cold, Smooth, Glimmering. [ENVIRONMENT]"},{"tag":"MIST-SHAPED-SUBJECT","description":"foggy 3D shaped transparent Mist forming a [SUBJECT], foggy, Floating smoke-shaped , vapor , ghostly, diffuse, haze . [ENVIRONMENT]"},{"tag":"SNOW-SHAPED-SUBJECT","description":"Snow shaped like a [SUBJECT], 3D realistic, White, Frosted, Soft, Crystalline, Sparkling. [ENVIRONMENT]"}],"STONE / MINERAL MATERIALS":[{"tag":"CLAY-SHAPED-SUBJECT","description":"Clay shaped like a [SUBJECT], Soft 3D realistic, Moldable, Earthy, Wet or Dry, Textured, Hand-shaped appearance. [ENVIRONMENT]"},{"tag":"CLAY-BRICK-RED-SHAPED-SUBJECT","description":"Red clay brick shaped like a [SUBJECT], Terracotta tone, Porous, Rough, Fired ceramic, Industrial texture. [ENVIRONMENT]"},{"tag":"BRICK-SHAPED-SUBJECT","description":"Brick shaped like a [SUBJECT], Rough 3D realistic, Textured, Heavy, Mortar-lined, Weathered, Solid, Structural. [ENVIRONMENT]"},{"tag":"CONCRETE-SHAPED-SUBJECT","description":"Concrete shaped like a [SUBJECT], Rough gray texture, Porous, Heavy, Industrial, cement surface, Solid. [ENVIRONMENT]"},{"tag":"STONE-SHAPED-SUBJECT","description":"Stone shaped like a [SUBJECT], Rough 3D realistic, Weathered, Cracked, Heavy, Textured, Natural minerals. [ENVIRONMENT]"},{"tag":"GRANITE-SHAPED-SUBJECT","description":"Granite shaped like a [SUBJECT], Speckled stone texture, Polished or rough, Dense, Mineral flecks, Heavy. [ENVIRONMENT]"},{"tag":"MINERAL-SHAPED-SUBJECT","description":"Mineral shaped like a [SUBJECT], Crystalline clusters, Raw stone texture, Metallic flecks, Natural formation. [ENVIRONMENT]"},{"tag":"MARBLE-SHAPED-SUBJECT","description":"Marble shaped like a [SUBJECT], Polished 3D realistic, Veined, Smooth, Reflective, Elegant, Stone-textured, Weighty. [ENVIRONMENT]"},{"tag":"OBSIDIAN-SHAPED-SUBJECT","description":"Obsidian shaped like a [SUBJECT], Glassy 3D realistic, Black volcanic stone, Razor-sharp reflections, Polished, Iridescent edges. [ENVIRONMENT]"}],"PRECIOUS MATERIALS":[{"tag":"GOLD-SHAPED-SUBJECT","description":"Gold shaped like a [SUBJECT], Glowing 3D realistic, Polished, Lustrous, Shiny, Precious, Reflective, Warm, Ornate, Radiant. [ENVIRONMENT]"},{"tag":"DIAMOND-SHAPED-SUBJECT","description":"Diamond shaped like a [SUBJECT], Sparkling 3D realistic, Faceted, Clear, Prismatic, Reflective, Hard, Gem-like, Radiant. [ENVIRONMENT]"},{"tag":"SAPPHIRE-SHAPED-SUBJECT","description":"Sapphire material shaped like a [SUBJECT], Deep blue faceted , Transparent, Highly refractive, Polished, Luminous. [ENVIRONMENT]"},{"tag":"RUBY-SHAPED-SUBJECT","description":"Ruby shaped like a [SUBJECT] 3D realistic, Red faceted , Clear, Highly reflective, Prismatic. [ENVIRONMENT]"},{"tag":"AMETHYST-SHAPED-SUBJECT","description":"Amethyst shaped like a [SUBJECT], Purple crystalline clusters, Sparkling, Raw mineral formation, Semi-transparent. [ENVIRONMENT]"},{"tag":"OPAL-SHAPED-SUBJECT","description":"Opal shaped like a [SUBJECT], Iridescent 3D realistic, Glossy, Smooth, Color-shifting, Radiant. [ENVIRONMENT]"}],"METALLIC MATERIALS":[{"tag":"METALLIC-SHAPED-SUBJECT","description":"Metal shaped like a [SUBJECT], Shiny 3D realistic, Polished, Reflective, Smooth, Industrial, Brushed, Rusted, Cold, Hard. [ENVIRONMENT]"},{"tag":"MERCURY-SHAPED-SUBJECT","description":"Mercury shaped like a [SUBJECT], Liquid metal, Heavy fluid, High surface tension, Silver droplets, Mirror-like reflection, Smooth, Beading. [ENVIRONMENT]"},{"tag":"BRASS-SHAPED-SUBJECT","description":"Brass shaped like a [SUBJECT], Yellow metallic alloy, Polished shine, Warm tone, Engraved or smooth. [ENVIRONMENT]"},{"tag":"BRONZE-SHAPED-SUBJECT","description":"Bronze shaped like a [SUBJECT], Metallic brown-gold, Aged patina, Sculpted, Heavy, Classic alloy shine. [ENVIRONMENT]"},{"tag":"MOLTEN-METAL-SHAPED-SUBJECT","description":"Molten metal shaped like a [SUBJECT], Glowing liquid metal, reflective, Hot, Fluid, Bright orange edges. [ENVIRONMENT]"},{"tag":"CARBON-FIBER-SHAPED-SUBJECT","description":"Carbon fiber shaped like a [SUBJECT], Woven black composite, Glossy resin coat, Lightweight, High-tech, Reflective weave. [ENVIRONMENT]"}],"SYNTHETIC & INDUSTRIAL MATERIALS":[{"tag":"RUBBER-SHAPED-SUBJECT","description":"Rubber shaped like a [SUBJECT], Smooth 3D realistic, Flexible, Matte or Glossy, Synthetic, Durable. [ENVIRONMENT]"},{"tag":"TIRE-RUBBER-SHAPED-SUBJECT","description":"Tire rubber shaped like a [SUBJECT], Deep tread grooves, Black textured rubber, Heavy-duty, Industrial. [ENVIRONMENT]"},{"tag":"PLASTIC-BOTTLE-SHAPED-SUBJECT","description":"Many Plastic bottles shaped like a [SUBJECT], Transparent , Molded ridges, distortion, Glossy, Recycled. [ENVIRONMENT]"},{"tag":"PLASTIC-WRAP-SHAPED-SUBJECT","description":"Empty Bubble wrap shaped like a sculpted [SUBJECT] invisible and hollow , Clear texture, Air pockets, transparency. [ENVIRONMENT] \n"},{"tag":"BLOCK-SHAPED-SUBJECT","description":"Plastic bricks shaped like a realistic [SUBJECT], Voxel construction, Studded surface, Modular, Geometric. [ENVIRONMENT]"},{"tag":"FOIL-SHAPED-SUBJECT","description":"Aluminium foil shaped like a [SUBJECT], Crinkled silver texture, Highly reflective, Sharp creases, Metallic thin film, Shiny. [ENVIRONMENT]"},{"tag":"WIRE-SHAPED-SUBJECT","description":"Wire shaped like a [SUBJECT], Tangled cables, Copper or steel strands, Industrial weave, Complex mesh, Tech-waste aesthetic. [ENVIRONMENT]"},{"tag":"PCB-SHAPED-SUBJECT","description":"Electronic chips shaped like a [SUBJECT], Green circuit texture, Gold traces, Soldered components, Capacitors, High-tech, Intricate details. [ENVIRONMENT]"},{"tag":"TAR-SHAPED-SUBJECT","description":"Tar shaped like a [SUBJECT], Thick 3D realistic, Black, Glossy, Sticky, Viscous, Dripping, Dense. [ENVIRONMENT]"}],"LIGHT-BASED / ENERGY MATERIALS":[{"tag":"NEBULA-SHAPED-SUBJECT","description":"Plasma shaped like a [SUBJECT], Ionized gas, Purple and pink hues, Soft glow, Energy field, Stellar texture, Gaseous. [ENVIRONMENT]"},{"tag":"PLASMA-SHAPED-SUBJECT","description":"Plasma shaped like a [SUBJECT], Electrified energy arcs, Glowing, Vibrational, Chaotic light patterns. [ENVIRONMENT]"},{"tag":"HOLOGRAM-SHAPED-SUBJECT","description":"Hologram shaped like a [SUBJECT], Translucent 3D projection, Glitching, Luminous, Pixel-lit edges, Futuristic, Floating light grid, Volumetric glow. [ENVIRONMENT]"},{"tag":"ELECTRICITY-SHAPED-SUBJECT","description":"Electricity shaped like a [SUBJECT], High-voltage arcs, Glowing blue-yellow-white, Crackling energy, Jagged lines, Luminous, Dynamic, Volatile. [ENVIRONMENT]"},{"tag":"NEON-SHAPED-SUBJECT","description":"Neon shaped like a [SUBJECT], Luminous realistic, Vibrant, Glowing, Electric, Bright, Futuristic. [ENVIRONMENT]"}],"NATURAL ORGANIC MATERIALS":[{"tag":"PLANT-SHAPED-SUBJECT","description":"Plant shaped like a [SUBJECT], Lush 3D realistic, Green, Leafy, Textured, Organic, Blooming, Natural, Vine-like, Rooted. [ENVIRONMENT]"},{"tag":"BAMBOO-SHAPED-SUBJECT","description":"Bamboo shaped like a [SUBJECT], Hollow segments, Natural green or dried tan, Linear texture, Organic, Fibrous. [ENVIRONMENT]"},{"tag":"BONE-SHAPED-SUBJECT","description":"Bone shaped like a [SUBJECT], Textured 3D realistic, Hard, Organic, Weathered, Pale, Detailed. [ENVIRONMENT]"},{"tag":"FUR-SHAPED-SUBJECT","description":"Fur shaped like a [SUBJECT], Soft dense fibers, Realistic strands, Fluffy, Textured, Warm tactile look. [ENVIRONMENT]"},{"tag":"CORAL-SHAPED-SUBJECT","description":"Coral shaped like a [SUBJECT], Porous texture, Marine organic, Calcified, Colorful details, Reef-like structure, Rough. [ENVIRONMENT]"},{"tag":"FEATHER-SHAPED-SUBJECT","description":"Many feathers shaped like a [SUBJECT] stylized stristic plumage-like , abstract , 3D realistic full with feathers , Detailed , Flowing. . [ENVIRONMENT]"},{"tag":"CLAMSHELL-SHAPED-SUBJECT","description":"Many Clamshells shaped like a [SUBJECT], Textured ridges, Pearlescent interior, Rough outer shell, Coastal, Organic. [ENVIRONMENT]"}],"FABRIC / TEXTILE MATERIALS":[{"tag":"LINEN-SHAPED-SUBJECT","description":"Linen shaped like a [SUBJECT] 3D, Woven natural fibers, Soft matte texture, Light and breathable, Subtle cross-thread pattern, Organic and lightweight. [ENVIRONMENT]"},{"tag":"FABRIC-SHAPED-SUBJECT","description":"Fabric shaped like a [SUBJECT], Soft 3D realistic, Flowing, Draped, Smooth, Woven, Textured. [ENVIRONMENT]"},{"tag":"SILK-SHAPED-SUBJECT","description":"Silk shaped like a [SUBJECT], Smooth flowing fabric, High-gloss sheen, Delicate drape, Ultra-fine fibers, Elegant shimmer, Luxurious texture. [ENVIRONMENT]"},{"tag":"VELVET-SHAPED-SUBJECT","description":"Velvet shaped like a [SUBJECT], Soft crushed fabric, Sheen, Deep shadows, Smooth, Luxurious, Tactile fuzz. [ENVIRONMENT]"},{"tag":"LEATHER-SHAPED-SUBJECT","description":"Leather shaped like a [SUBJECT], Tanned hide texture, Visible grain, Stitched seams, Worn or Polished, Durable, Brown/Black tones. [ENVIRONMENT]"},{"tag":"DENIM-SHAPED-SUBJECT","description":"Denim shaped like a [SUBJECT], Blue jean texture, Woven cotton, White stitching, Frayed edges, Heavy fabric, Indigo. [ENVIRONMENT]"}],"SOFT / POROUS MATERIALS":[{"tag":"FOAM-SHAPED-SUBJECT","description":"Bubble Foam shaped like a [SUBJECT], Soft porous texture, Lightweight, Air-bubble structure, Spongy, Matte. [ENVIRONMENT]"},{"tag":"CORK-SHAPED-SUBJECT","description":"Cork shaped like a [SUBJECT], Compressed wood particles, Porous, Matte tan color, Natural, Lightweight, Vintage. [ENVIRONMENT]"},{"tag":"SPONGE-MATERIAL","description":"Sponge-material shaped like a [SUBJECT], porous texture, Air holes, Soft, Absorbent, Matte, Squeezable. [ENVIRONMENT]"}],"POWDER / DUST / GRAIN MATERIALS":[{"tag":"SAND-SHAPED-SUBJECT","description":"3D Sand shaped like a [SUBJECT], realistic, Textured, Loose, Dry, Natural, Layered. [ENVIRONMENT]"},{"tag":"CHARCOAL-SHAPED-SUBJECT","description":"Charcoal shaped like a [SUBJECT], Burnt 3D realistic, Matte dark texture, Cracked, Dry, Chalky edges. [ENVIRONMENT]"}],"LIQUID / VISCOUS MATERIALS":[{"tag":"HONEY-SHAPED-SUBJECT","description":"Honey shaped like a [SUBJECT], Golden amber liquid, Viscous, Translucent, Sticky, Slow-dripping, Sweet gloss, Bubble inclusions. [ENVIRONMENT]"},{"tag":"MILK-SHAPED-SUBJECT","description":"Milk shaped like a [SUBJECT], Creamy white liquid 3D realistic, Splashing, Opaque, Smooth, Fluid motion, Droplets, Pure. [ENVIRONMENT]"},{"tag":"CHOCOLATE-SHAPED-SUBJECT","description":"Chocolate shaped like a [SUBJECT], Melting dark chocolate, Matte to satin finish, Smooth, Rich brown, Thick liquid flow. [ENVIRONMENT]"},{"tag":"SLIME-SHAPED-SUBJECT","description":"Slime shaped like a [SUBJECT], Translucent, Gooey, Dripping, Wet, Gelatinous, Sticky, Glossy surface. [ENVIRONMENT]"},{"tag":"INK-SHAPED-SUBJECT","description":"Black ink shaped like a [SUBJECT], Fluid simulation 3D realistic, Swirling in water, Dissolving edges, Smoky liquid, High contrast, Abstract flow. [ENVIRONMENT]"},{"tag":"PAINT-SHAPED-SUBJECT","description":"Thick paint shaped like a [SUBJECT], Acrylic texture 3D realistic, Brush strokes, Wet gloss, Colorful, Heavy blend, Artistic. [ENVIRONMENT]"},{"tag":"BLOOD-SHAPED-SUBJECT","description":"Blood shaped like a [SUBJECT], Deep crimson liquid, Glossy, Viscous, Splattered, Droplets, Organic fluid, High contrast. [ENVIRONMENT]"}]}}};
+
+        const categoryTitles = {
+            angles: "HISTORICAL ART MOVEMENTS",
+            shots: "TRADITIONAL MEDIA",
+            composition: "ANIMATION & COMICS",
+            movement: "3D / DIGITAL RENDERING",
+            lens: "AESTHETIC GENRES",
+            special: "ADD MORE"
+        };
+
+        // DOM elements
+        const copyMessage = document.getElementById('copy-message');
+        const editModal = document.getElementById('edit-modal');
+        const editText = document.getElementById('edit-text');
+        const saveEdit = document.getElementById('save-edit');
+        const cancelEdit = document.getElementById('cancel-edit');
+        const searchInput = document.getElementById('search');
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const categoryModal = document.getElementById('category-modal');
+        const categoryNameInput = document.getElementById('category-name');
+        const saveCategoryBtn = document.getElementById('save-category');
+        const cancelCategoryBtn = document.getElementById('cancel-category');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
+            renderPages();
+            setupEventListeners();
+        });
+
+        function saveToLocalStorage() {
+            localStorage.setItem('htmlsprompts', JSON.stringify(prompts));
+        }
+
+        function loadFromLocalStorage() {
+            const data = localStorage.getItem('htmlsprompts');
+            if (data) {
+                prompts = JSON.parse(data);
+            } else {
+                // First time - migrate initial data
+                prompts.pages["Main Page"] = {};
+                for (const [key, value] of Object.entries(initialData)) {
+                    prompts.pages["Main Page"][categoryTitles[key] || key] = value;
+                }
+                saveToLocalStorage();
+            }
+        }
+
+        function renderPages() {
+            const pagesBar = document.getElementById("pages-bar");
+            pagesBar.innerHTML = "";
+            
+            Object.keys(prompts.pages).forEach(pageName => {
+                const btn = document.createElement("button");
+                btn.textContent = pageName;
+                btn.addEventListener("click", () => showPage(pageName));
+                if (pageName === currentPage) {
+                    btn.classList.add("active");
+                }
+                pagesBar.appendChild(btn);
+            });
+
+            if (!currentPage || !prompts.pages[currentPage]) {
+                currentPage = Object.keys(prompts.pages)[0];
+            }
+            showPage(currentPage);
+        }
+
+        function showPage(pageName) {
+            currentPage = pageName;
+            const container = document.getElementById("pages-container");
+            container.innerHTML = "";
+
+            // Update active button
+            document.querySelectorAll('#pages-bar button').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent === pageName);
+            });
+
+            const pageData = prompts.pages[pageName];
+            Object.keys(pageData).forEach(categoryName => {
+                const section = document.createElement("div");
+                section.className = "category";
+                section.innerHTML = `
+                    <h2 class="category-title">${categoryName}</h2>
+                    <div class="category-controls">
+                        <button class="add-prompt-btn" data-category="${categoryName}">Add Prompt</button>
+                        <button class="delete-category-btn" data-category="${categoryName}">Delete Category</button>
+                    </div>
+                    <div class="prompt-grid" id="${pageName}-${categoryName}-grid"></div>
+                `;
+                container.appendChild(section);
+            });
+            renderPrompts();
+        }
+
+        function renderPrompts() {
+            const page = prompts.pages[currentPage];
+            if (!page) return;
+
+            for (const [category, promptList] of Object.entries(page)) {
+                const grid = document.getElementById(`${currentPage}-${category}-grid`);
+                if (!grid) continue;
+                grid.innerHTML = "";
+                promptList.forEach(prompt => {
+                    grid.appendChild(createPromptCard(prompt, category));
+                });
+            }
+        }
+
+function createPromptCard(prompt, category) {
+    const card = document.createElement('div');
+    card.className = 'prompt-card';
+
+    // Image
+    const img = document.createElement('img');
+    img.className = 'prompt-image';
+    const baseName = prompt.tag.replace(/ /g, '_');
+    img.src = `images/${baseName}.png`;
+    img.onerror = () => {
+        img.src = `images/${baseName}.jpg`;
+        img.onerror = () => { img.style.display = 'none'; };
+    };
+    card.appendChild(img);
+
+    // Tag
+    const tag = document.createElement('span');
+    tag.className = 'prompt-tag';
+    tag.textContent = prompt.tag;
+    card.appendChild(tag);
+
+    // Description
+    const desc = document.createElement('p');
+    desc.className = 'prompt-description';
+    desc.textContent = prompt.description;
+    card.appendChild(desc);
+
+    // Edit buttons
+    const editButtons = document.createElement('div');
+    editButtons.className = 'edit-buttons';
+
+    const editBtn = document.createElement('button');
+    editBtn.textContent = 'Edit';
+    editBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openEditModal(prompt, category);
+    });
+    editButtons.appendChild(editBtn);
+
+    const delBtn = document.createElement('button');
+    delBtn.textContent = 'Delete';
+    delBtn.className = 'delete';
+    delBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        deletePrompt(prompt, category);
+    });
+    editButtons.appendChild(delBtn);
+
+    // Move left button
+    const moveLeftBtn = document.createElement('button');
+    moveLeftBtn.textContent = '←';
+    moveLeftBtn.title = "Move Left";
+    moveLeftBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        movePrompt(prompt, category, -1);
+    });
+    editButtons.appendChild(moveLeftBtn);
+
+    // Move right button
+    const moveRightBtn = document.createElement('button');
+    moveRightBtn.textContent = '→';
+    moveRightBtn.title = "Move Right";
+    moveRightBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        movePrompt(prompt, category, 1);
+    });
+    editButtons.appendChild(moveRightBtn);
+
+    card.appendChild(editButtons);
+
+    // Click to copy
+    card.addEventListener('click', () => {
+        copyPrompt(card);
+    });
+
+    return card;
+}
+
+        function copyPrompt(card) {
+            const tag = card.querySelector('.prompt-tag').textContent;
+            const desc = card.querySelector('.prompt-description').textContent;
+            const fullPrompt = `${tag}: ${desc}`;
+            navigator.clipboard.writeText(fullPrompt).then(() => {
+                copyMessage.classList.add('show');
+                setTimeout(() => {
+                    copyMessage.classList.remove('show');
+                }, 1500);
+                card.style.backgroundColor = '#a5d6a7';
+                setTimeout(() => {
+                    card.style.backgroundColor = '';
+                }, 200);
+            });
+        }
+
+        function openEditModal(prompt, category) {
+            currentEditPrompt = prompt;
+            currentEditCategory = category;
+            editText.value = `${prompt.tag}\n${prompt.description}`;
+            editModal.style.display = 'block';
+        }
+
+        function saveEditedPrompt() {
+            const lines = editText.value.split('\n');
+            const tag = lines[0];
+            const description = lines.slice(1).join('\n');
+
+            currentEditPrompt.tag = tag;
+            currentEditPrompt.description = description;
+
+            editModal.style.display = 'none';
+            renderPrompts();
+            saveToLocalStorage();
+        }
+
+        function deletePrompt(prompt, category) {
+            const list = prompts.pages[currentPage][category];
+            const index = list.indexOf(prompt);
+            if (index !== -1) {
+                if (confirm('Delete this prompt?')) {
+                    list.splice(index, 1);
+                    renderPrompts();
+                    saveToLocalStorage();
+                }
+            }
+        }
+
+        function deleteCategory(categoryName) {
+            if (confirm(`Delete category "${categoryName}" and all its prompts?`)) {
+                delete prompts.pages[currentPage][categoryName];
+                showPage(currentPage);
+                saveToLocalStorage();
+            }
+        }
+
+        function setupEventListeners() {
+            saveEdit.addEventListener('click', saveEditedPrompt);
+            cancelEdit.addEventListener('click', () => {
+                editModal.style.display = 'none';
+            });
+
+            // Add page
+            document.getElementById("add-page-btn").addEventListener("click", () => {
+                const name = prompt("Page name:");
+                if (!name || !name.trim()) return;
+                if (prompts.pages[name]) {
+                    alert("Page already exists!");
+                    return;
+                }
+                prompts.pages[name] = {};
+                saveToLocalStorage();
+                renderPages();
+            });
+
+            // Add category
+            document.getElementById("add-category-btn").addEventListener("click", () => {
+                categoryNameInput.value = "";
+                categoryModal.style.display = 'block';
+            });
+
+            saveCategoryBtn.addEventListener('click', () => {
+                const name = categoryNameInput.value.trim();
+                if (!name) return;
+                if (prompts.pages[currentPage][name]) {
+                    alert("Category already exists!");
+                    return;
+                }
+                prompts.pages[currentPage][name] = [];
+                categoryModal.style.display = 'none';
+                showPage(currentPage);
+                saveToLocalStorage();
+            });
+
+            cancelCategoryBtn.addEventListener('click', () => {
+                categoryModal.style.display = 'none';
+            });
+
+            // Delegate events for dynamically created buttons
+            document.addEventListener("click", e => {
+                if (e.target.classList.contains("add-prompt-btn")) {
+                    const category = e.target.dataset.category;
+                    prompts.pages[currentPage][category].push({
+                        tag: "New Prompt",
+                        description: "Description..."
+                    });
+                    renderPrompts();
+                    saveToLocalStorage();
+                }
+                
+                if (e.target.classList.contains("delete-category-btn")) {
+                    const category = e.target.dataset.category;
+                    deleteCategory(category);
+                }
+            });
+
+            // Search
+            searchInput.addEventListener('input', () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                document.querySelectorAll('.prompt-card').forEach(card => {
+                    const tag = card.querySelector('.prompt-tag').textContent.toLowerCase();
+                    card.style.display = tag.includes(searchTerm) ? 'block' : 'none';
+                });
+
+                document.querySelectorAll('.category').forEach(category => {
+                    const cards = category.querySelectorAll('.prompt-card');
+                    const hasVisibleCards = Array.from(cards).some(card => card.style.display !== 'none');
+                    category.style.display = hasVisibleCards ? 'block' : 'none';
+                });
+            });
+
+            // Dark mode
+            darkModeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                darkModeToggle.textContent = document.body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
+            });
+        }
+    </script>
+    <!-- ... all your existing HTML content ... -->
+
+    <!-- Export HTML Button -->
+    <div style="text-align: center; margin: 20px;">
+        <button id="export-html-btn" style="padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #2196F3; color: white; border: none; border-radius: 5px;">Export HTML</button>
+    </div>
+
+    <script>
+        document.getElementById('export-html-btn').addEventListener('click', () => {
+            // Get the current HTML
+            let html = document.documentElement.outerHTML;
+
+            // Get stored prompts
+            const storedPrompts = localStorage.getItem('htmlsprompts') || '{}';
+
+            // Replace the initialData object in the HTML with the stored prompts
+            html = html.replace(
+                /const initialData = {[\s\S]*?};/,
+                `const initialData = ${storedPrompts};`
+            );
+
+            // Trigger download
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'updated_prompts.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+    </script>
+<script>
+function movePrompt(prompt, category, direction) {
+    const list = prompts.pages[currentPage][category];
+    const index = list.indexOf(prompt);
+    if (index === -1) return;
+
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= list.length) return;
+
+    // Swap elements
+    [list[index], list[newIndex]] = [list[newIndex], list[index]];
+
+    renderPrompts();
+    saveToLocalStorage();
+}
+</script>
+
+
+</body></html>

@@ -489,19 +489,21 @@ body {
             localStorage.setItem('htmlsprompts', JSON.stringify(prompts));
         }
 
-        function loadFromLocalStorage() {
-            const data = localStorage.getItem('htmlsprompts');
-            if (data) {
-                prompts = JSON.parse(data);
-            } else {
-                // First time - migrate initial data
-                prompts.pages["Main Page"] = {};
-                for (const [key, value] of Object.entries(initialData)) {
-                    prompts.pages["Main Page"][categoryTitles[key] || key] = value;
-                }
-                saveToLocalStorage();
-            }
+function loadFromLocalStorage() {
+    const data = localStorage.getItem('htmlsprompts');
+
+    if (data) {
+        try {
+            prompts = JSON.parse(data);
+        } catch (e) {
+            console.error('Failed to parse localStorage, falling back to initialData', e);
+            prompts = initialData; // fallback if corrupted
         }
+    } else {
+        prompts = initialData;       // fallback to embedded HTML data
+        saveToLocalStorage();        // save so edits persist
+    }
+}
 
         function renderPages() {
             const pagesBar = document.getElementById("pages-bar");

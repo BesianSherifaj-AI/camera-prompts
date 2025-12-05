@@ -496,14 +496,41 @@ function loadFromLocalStorage() {
         try {
             prompts = JSON.parse(data);
         } catch (e) {
-            console.error('Failed to parse localStorage, falling back to initialData', e);
-            prompts = initialData; // fallback if corrupted
+            console.error('Failed to parse localStorage, falling back to HTML content', e);
+            prompts = parseHTMLPrompts(); // parse from current HTML
         }
     } else {
-        prompts = initialData;       // fallback to embedded HTML data
-        saveToLocalStorage();        // save so edits persist
+        prompts = parseHTMLPrompts(); // parse from current HTML
+        saveToLocalStorage();
     }
 }
+
+// This function reads the prompts already in the HTML
+function parseHTMLPrompts() {
+    const result = { pages: {} };
+    const pagesContainer = document.getElementById('pages-container');
+
+    if (!pagesContainer) return initialData; // fallback if container missing
+
+    const categories = pagesContainer.querySelectorAll('.category');
+    const currentPageName = document.querySelector('#pages-bar button.active')?.textContent || 'Main Page';
+    result.pages[currentPageName] = {};
+
+    categories.forEach(category => {
+        const title = category.querySelector('.category-title')?.textContent || 'Untitled';
+        result.pages[currentPageName][title] = [];
+
+        const cards = category.querySelectorAll('.prompt-card');
+        cards.forEach(card => {
+            const tag = card.querySelector('.prompt-tag')?.textContent || 'New Prompt';
+            const description = card.querySelector('.prompt-description')?.textContent || '';
+            result.pages[currentPageName][title].push({ tag, description });
+        });
+    });
+
+    return result;
+}
+
 
         function renderPages() {
             const pagesBar = document.getElementById("pages-bar");
